@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Inter:wght@400;600;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+  @apply bg-darker text-white overflow-x-hidden;
+}
+
+body {
+  @apply antialiased;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #232D36; 
+}
+::-webkit-scrollbar-thumb {
+  background: #3B096E; 
+  border-radius: 4px;
+}
+
+.light-spread-active::after {
+  content: '';
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: radial-gradient(circle, rgba(15,148,185,0.15) 0%, rgba(0,0,0,0) 70%);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  animation: spreadLight 1.5s forwards ease-out;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@keyframes spreadLight {
+  to {
+    width: 300vw;
+    height: 300vw;
+    opacity: 1;
+  }
+}

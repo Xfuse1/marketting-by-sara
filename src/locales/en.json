@@ -1,0 +1,74 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "vision": "Vision",
+    "services": "Services",
+    "process": "Process",
+    "team": "Team",
+    "caseStudies": "Case Studies",
+    "specialOffer": "Special Offer",
+    "faq": "FAQ",
+    "contact": "Contact"
+  },
+  "hero": {
+    "title": "XFUSE",
+    "subtitle": "Strategic Intelligence. Connecting the dots for your brand.",
+    "lightOn": "Turn the light on",
+    "plugHint": "Click the plug to connect"
+  },
+  "avatar": {
+    "welcome": "Your brand is almost ready. Let's turn the light on!",
+    "turnOn": "Turn it on",
+    "connected": "Great! Now let's understand your brand better.",
+    "insight": "I can clarify this in 15 minutes.",
+    "book": "Book Your 15-Min Consultation",
+    "handoff": "Let me connect you with our {{department}} specialist."
+  },
+  "departments": {
+    "pr": "Public Relations",
+    "media": "Media Buyer",
+    "content": "Content Creator",
+    "research": "Market Research",
+    "moderator": "Community Moderator"
+  },
+  "modal": {
+    "title": "Book Free Consultation",
+    "name": "Your Name",
+    "email": "Email Address",
+    "cancel": "Cancel",
+    "confirm": "Confirm Booking",
+    "success": "Consultation booked successfully! We'll contact you soon."
+  },
+  "questions": {
+    "stage": {
+      "question": "What stage is your business at?",
+      "options": [
+        "Just starting out",
+        "Growing fast",
+        "Established",
+        "Enterprise"
+      ]
+    },
+    "goal": {
+      "question": "What do you want to achieve?",
+      "options": [
+        "Build brand awareness",
+        "Increase sales/leads",
+        "Rebrand/Refresh",
+        "Market expansion"
+      ]
+    },
+    "obstacle": {
+      "question": "What’s stopping you right now?",
+      "options": [
+        "Limited expertise",
+        "No clear strategy",
+        "Technology hurdles",
+        "Time constraints"
+      ]
+    },
+    "cta": "Want us to take this further?",
+    "insight": "This can be clarified in 15 minutes."
+  }
+}

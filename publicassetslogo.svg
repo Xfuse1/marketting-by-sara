@@ -1,0 +1,14 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F0580E;stop-opacity:1" />
+      <stop offset="28%" style="stop-color:#A20870;stop-opacity:1" />
+      <stop offset="58%" style="stop-color:#3B096E;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0F94B9;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="20" fill="#232D36"/>
+  <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="url(#logoGradient)" text-anchor="middle" dominant-baseline="middle">XFUSE</text>
+  <circle cx="170" cy="30" r="15" fill="#0F94B9" opacity="0.3"/>
+  <circle cx="30" cy="170" r="20" fill="#F0580E" opacity="0.3"/>
+</svg>
