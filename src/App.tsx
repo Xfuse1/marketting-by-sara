@@ -17,15 +17,18 @@ import { Hero } from './components/sections/Hero';
 
 function App() {
   const { t, i18n } = useTranslation();
-
   const [stage, setStage] = useState(0);
   const [lightOn, setLightOn] = useState(false);
+  const [showFlash, setShowFlash] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handlePlugConnect = () => {
+    setShowFlash(true);
     setLightOn(true);
     setStage(2);
     document.body.classList.add('light-spread-active');
+
+    setTimeout(() => setShowFlash(false), 1000);
 
     // Auto-transition to questionnaire after reveal animation
     setTimeout(() => {
@@ -50,8 +53,9 @@ function App() {
     <div className={`relative min-h-screen transition-colors duration-300 ${lightOn ? 'text-white' : 'text-gray-400'} bg-darker dark:bg-white`}>
       {/* Global Components */}
       <CustomCursor />
+      {showFlash && <div className="flash-overlay" />}
       <Global3DBackground />
-      <Header />
+      <Header lightOn={lightOn} />
       <SpecialOfferBanner />
       <QuickActions />
 

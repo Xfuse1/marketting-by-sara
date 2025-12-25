@@ -17,7 +17,11 @@ const navItems = [
   { id: 'contact', label_en: 'Contact', label_ar: 'تواصل' }
 ];
 
-export function Header() {
+interface HeaderProps {
+  lightOn: boolean;
+}
+
+export function Header({ lightOn }: HeaderProps) {
   const { i18n } = useTranslation();
   const { theme, toggleTheme, isDark } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -68,10 +72,9 @@ export function Header() {
         animate={{ y: 0 }}
         className={`
           fixed top-0 left-0 right-0 z-50 transition-all duration-300
-          ${
-            scrolled
-              ? 'bg-darker/80 dark:bg-white/80 backdrop-blur-lg border-b border-gray-800/50 dark:border-gray-200 shadow-lg'
-              : 'bg-transparent'
+          ${scrolled
+            ? 'bg-darker/80 dark:bg-white/80 backdrop-blur-lg border-b border-gray-800/50 dark:border-gray-200 shadow-lg'
+            : 'bg-transparent'
           }
         `}
       >
@@ -86,11 +89,18 @@ export function Header() {
                 <img
                   src="/assets/logo.svg"
                   alt="XFUSE"
-                  className="w-10 h-10 rounded-lg group-hover:scale-110 transition-transform duration-300"
+                  className={`w-10 h-10 rounded-lg group-hover:scale-110 transition-all duration-500 ${lightOn ? 'opacity-100 shadow-[0_0_20px_rgba(15,148,185,0.8)] filter drop-shadow-[0_0_8px_rgba(240,88,14,0.5)]' : 'opacity-40 brightness-50'}`}
                 />
+                {lightOn && (
+                  <motion.div
+                    animate={{ opacity: [0.5, 1, 0.5] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="absolute inset-0 bg-primary/30 rounded-lg blur-xl"
+                  />
+                )}
                 <div className="absolute inset-0 bg-primary/20 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-primary via-magenta to-purple bg-clip-text text-transparent">
+              <span className={`text-xl font-bold bg-gradient-to-r from-primary via-magenta to-purple bg-clip-text text-transparent transition-all duration-700 ${lightOn ? 'opacity-100 scale-100' : 'opacity-30 scale-95 blur-[1px]'}`}>
                 XFUSE
               </span>
             </button>
@@ -103,10 +113,9 @@ export function Header() {
                   onClick={() => scrollToSection(item.id)}
                   className={`
                     px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300
-                    ${
-                      activeSection === item.id
-                        ? 'bg-primary/10 text-primary'
-                        : 'text-gray-400 dark:text-gray-600 hover:text-white dark:hover:text-black hover:bg-gray-800/50 dark:hover:bg-gray-200/50'
+                    ${activeSection === item.id
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-gray-400 dark:text-gray-600 hover:text-white dark:hover:text-black hover:bg-gray-800/50 dark:hover:bg-gray-200/50'
                     }
                   `}
                 >
@@ -199,10 +208,9 @@ export function Header() {
                       onClick={() => scrollToSection(item.id)}
                       className={`
                         w-full text-${lang === 'ar' ? 'right' : 'left'} px-4 py-3 rounded-lg font-medium transition-all duration-300
-                        ${
-                          activeSection === item.id
-                            ? 'bg-primary/10 text-primary border border-primary/20'
-                            : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+                        ${activeSection === item.id
+                          ? 'bg-primary/10 text-primary border border-primary/20'
+                          : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
                         }
                       `}
                     >

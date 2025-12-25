@@ -52,11 +52,30 @@ export const Hero: React.FC<HeroProps> = ({ stage, setStage, onConnect, lightOn 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute bottom-20 z-10 text-center pointer-events-none"
+            className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none"
           >
-            <p className="text-primary animate-pulse text-lg font-medium tracking-tighter">
-              {t('questions.dragPlug') || "Drag the plug to the socket"}
-            </p>
+            {/* Visual Guide Line/Arrow to socket area */}
+            <svg className="absolute w-full h-full">
+              <motion.path
+                d="M -100,0 L 100,0"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 0.3 }}
+                className="stroke-primary stroke-[2] fill-none"
+                strokeDasharray="10 5"
+              />
+            </svg>
+
+            <div className="absolute bottom-20 text-center">
+              <motion.div
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <p className="text-primary text-2xl font-black tracking-widest uppercase mb-2">
+                  {t('hero.plugHint') || "Drag to connect"}
+                </p>
+                <div className="w-1 h-12 bg-gradient-to-b from-primary to-transparent mx-auto rounded-full" />
+              </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
