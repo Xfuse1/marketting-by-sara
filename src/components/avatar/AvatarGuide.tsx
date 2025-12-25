@@ -125,9 +125,11 @@ export const AvatarGuide = ({ stage, setStage, onBookClick }: AvatarProps) => {
               {stage === 5 && (
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center">
                   <p className="text-lg font-bold text-darker mb-2">{t('questions.cta')}</p>
-                  <p className="text-sm text-gray-500 mb-6">
-                    {lang === 'en' ? "Let's turn these insights into a roadmap." : "دعنا نحول هذه الرؤى إلى خارطة طريق."}
-                  </p>
+                  <div className="flex flex-col gap-1 mb-6">
+                    <p className="text-[10px] text-primary font-bold uppercase tracking-widest">{t('questions.micro.noPressure')}</p>
+                    <p className="text-[10px] text-gray-500 uppercase tracking-widest">{t('questions.micro.control')}</p>
+                    <p className="text-[10px] text-gray-400 uppercase tracking-widest">{t('questions.micro.handoff')}</p>
+                  </div>
                   <button
                     onClick={onBookClick}
                     className="w-full bg-brand-gradient text-white py-4 rounded-xl font-black text-lg shadow-xl hover:shadow-primary/40 hover:scale-[1.02] transition-all"
@@ -149,7 +151,7 @@ export const AvatarGuide = ({ stage, setStage, onBookClick }: AvatarProps) => {
       >
         <div className="w-16 h-16 rounded-full border-4 border-white shadow-2xl overflow-hidden bg-brand-gradient p-1">
           <div className="w-full h-full rounded-full bg-darker flex items-center justify-center text-white overflow-hidden">
-            <img src="/assets/team/member2.svg" alt="XFUSE Guide" className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
+            <img src="/assets/team/member2.png" alt="XFUSE Guide" className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
           </div>
         </div>
         {!isOpen && (

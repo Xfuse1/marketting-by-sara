@@ -33,74 +33,50 @@ export function QuickActions() {
     <AnimatePresence>
       {visible && (
         <motion.div
-          initial={{ opacity: 0, scale: 0.8, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.8, y: 20 }}
-          transition={{ duration: 0.3 }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
           className={`
-            fixed bottom-8 ${lang === 'ar' ? 'left-8' : 'right-8'}
-            flex flex-col gap-3 z-40
+            fixed bottom-10 ${lang === 'ar' ? 'left-8' : 'right-8'}
+            flex flex-col gap-6 z-40
           `}
         >
-          {/* Contact Button */}
+          {/* Scroll to Top - Circle Shape */}
           <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => scrollToSection('contact')}
-            className="group relative p-4 bg-primary hover:bg-primary/90 text-white rounded-full shadow-lg hover:shadow-primary/50 transition-all duration-300"
-            aria-label="Contact us"
-          >
-            <MessageCircle className="w-6 h-6" />
-            {/* Tooltip */}
-            <div className={`
-              absolute ${lang === 'ar' ? 'right-full mr-3' : 'left-full ml-3'} top-1/2 -translate-y-1/2
-              px-3 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg
-              opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap
-              transition-opacity duration-300
-            `}>
-              {lang === 'en' ? 'Contact' : 'تواصل'}
-            </div>
-          </motion.button>
-
-          {/* Special Offer Button (with pulse animation) */}
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => scrollToSection('special-offer')}
-            className="group relative p-4 bg-gradient-to-r from-orange via-magenta to-purple hover:shadow-2xl hover:shadow-magenta/50 text-white rounded-full shadow-lg transition-all duration-300"
-            aria-label="View special offer"
-          >
-            <Sparkles className="w-6 h-6" />
-            {/* Pulsing Ring */}
-            <span className="absolute inset-0 rounded-full bg-magenta/50 animate-ping" />
-            {/* Tooltip */}
-            <div className={`
-              absolute ${lang === 'ar' ? 'right-full mr-3' : 'left-full ml-3'} top-1/2 -translate-y-1/2
-              px-3 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg
-              opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap
-              transition-opacity duration-300 z-10
-            `}>
-              {lang === 'en' ? 'Special Offer' : 'عرض خاص'}
-            </div>
-          </motion.button>
-
-          {/* Scroll to Top Button */}
-          <motion.button
-            whileHover={{ scale: 1.1 }}
+            whileHover={{ scale: 1.1, rotate: 90 }}
             whileTap={{ scale: 0.9 }}
             onClick={scrollToTop}
-            className="group relative p-4 bg-gray-800 hover:bg-gray-700 text-white rounded-full shadow-lg transition-all duration-300"
-            aria-label="Scroll to top"
+            className="w-14 h-14 bg-darker border border-primary/30 text-primary rounded-full shadow-2xl flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-500 group relative"
           >
             <ChevronUp className="w-6 h-6" />
-            {/* Tooltip */}
-            <div className={`
-              absolute ${lang === 'ar' ? 'right-full mr-3' : 'left-full ml-3'} top-1/2 -translate-y-1/2
-              px-3 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg
-              opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap
-              transition-opacity duration-300
-            `}>
-              {lang === 'en' ? 'Back to top' : 'العودة للأعلى'}
+            <div className={`absolute ${lang === 'ar' ? 'right-full mr-4' : 'left-full ml-4'} opacity-0 group-hover:opacity-100 transition-opacity bg-primary text-white text-[10px] font-bold px-2 py-1 rounded-sm uppercase tracking-widest whitespace-nowrap`}>
+              {lang === 'en' ? 'SCROLL' : 'صعود'}
+            </div>
+          </motion.button>
+
+          {/* View Special Offer - Squircle/RoundedBox Shape */}
+          <motion.button
+            whileHover={{ scale: 1.1, borderRadius: '20%' }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => scrollToSection('special-offer')}
+            className="w-14 h-14 bg-brand-gradient text-white rounded-2xl shadow-2xl flex items-center justify-center transition-all duration-500 group relative"
+          >
+            <Sparkles className="w-6 h-6 animate-pulse" />
+            <div className={`absolute ${lang === 'ar' ? 'right-full mr-4' : 'left-full ml-4'} opacity-0 group-hover:opacity-100 transition-opacity bg-magenta text-white text-[10px] font-bold px-2 py-1 rounded-sm uppercase tracking-widest whitespace-nowrap`}>
+              {lang === 'en' ? 'VIEW OFFER' : 'العروض'}
+            </div>
+          </motion.button>
+
+          {/* Contact - Hexagon-like or custom shape (Rounded Corner Pentagon) */}
+          <motion.button
+            whileHover={{ scale: 1.1, rotate: -15 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => scrollToSection('contact')}
+            className="w-14 h-14 bg-primary text-white rounded-tr-[50%] rounded-bl-[50%] shadow-2xl flex items-center justify-center hover:rotate-0 transition-all duration-500 group relative"
+          >
+            <MessageCircle className="w-6 h-6" />
+            <div className={`absolute ${lang === 'ar' ? 'right-full mr-4' : 'left-full ml-4'} opacity-0 group-hover:opacity-100 transition-opacity bg-primary text-white text-[10px] font-bold px-2 py-1 rounded-sm uppercase tracking-widest whitespace-nowrap`}>
+              {lang === 'en' ? 'CONTACT' : 'تواصل'}
             </div>
           </motion.button>
         </motion.div>

@@ -8,16 +8,17 @@ interface HeroProps {
   setStage: (s: number) => void;
   onConnect: () => void;
   lightOn: boolean;
+  isWeakDevice?: boolean;
 }
 
-export const Hero: React.FC<HeroProps> = ({ stage, setStage, onConnect, lightOn }) => {
+export const Hero: React.FC<HeroProps> = ({ stage, setStage, onConnect, lightOn, isWeakDevice }) => {
   const { t } = useTranslation();
 
   return (
     <section id="home" className="h-screen flex flex-col items-center justify-center relative overflow-hidden bg-darker">
       {/* Background 3D Scene */}
       <div className="absolute inset-0 z-0">
-        <HeroScene onConnect={onConnect} />
+        <HeroScene onConnect={onConnect} isWeakDevice={isWeakDevice} />
       </div>
 
       {/* Stage 0 Overlay */}

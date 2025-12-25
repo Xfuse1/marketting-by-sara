@@ -42,33 +42,38 @@
   },
   "questions": {
     "stage": {
-      "question": "What stage is your business at?",
+      "question": "Where does your brand stand today?",
       "options": [
-        "Just starting out",
-        "Growing fast",
-        "Established",
-        "Enterprise"
+        "Conceptual / Start-up",
+        "Scaling / Rapid Growth",
+        "Market Leader / Established",
+        "Legacy Brand / Re-inventing"
       ]
     },
     "goal": {
-      "question": "What do you want to achieve?",
+      "question": "What is your primary objective?",
       "options": [
-        "Build brand awareness",
-        "Increase sales/leads",
-        "Rebrand/Refresh",
-        "Market expansion"
+        "Cultural Dominance / PR",
+        "Performance / Media Buying",
+        "Digital Infrastructure",
+        "Global Expansion"
       ]
     },
     "obstacle": {
-      "question": "What’s stopping you right now?",
+      "question": "What is the biggest hurdle?",
       "options": [
-        "Limited expertise",
-        "No clear strategy",
-        "Technology hurdles",
-        "Time constraints"
+        "Lack of Strategic Intelligence",
+        "Technical Debt / Complexity",
+        "Market Saturation",
+        "Brand Inconsistency"
       ]
     },
     "cta": "Want us to take this further?",
-    "insight": "This can be clarified in 15 minutes."
+    "insight": "This can be clarified in 15 minutes.",
+    "micro": {
+      "noPressure": "No pressure. Just clarity.",
+      "control": "You’re in control.",
+      "handoff": "We’ll take it from here."
+    }
   }
 }

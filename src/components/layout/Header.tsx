@@ -71,51 +71,49 @@ export function Header({ lightOn }: HeaderProps) {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         className={`
-          fixed top-0 left-0 right-0 z-50 transition-all duration-300
+          fixed top-4 left-4 right-4 z-50 transition-all duration-500
           ${scrolled
-            ? 'bg-darker/80 dark:bg-white/80 backdrop-blur-lg border-b border-gray-800/50 dark:border-gray-200 shadow-lg'
+            ? 'bg-darker/40 dark:bg-white/40 backdrop-blur-2xl border border-white/10 dark:border-black/5 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] rounded-2xl'
             : 'bg-transparent'
           }
         `}
       >
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center justify-between h-20">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo */}
             <button
               onClick={() => scrollToSection('home')}
-              className="flex items-center gap-3 group"
+              className="flex items-center gap-3 group relative"
             >
-              <div className="relative">
+              <div className="relative transform group-hover:rotate-12 transition-transform duration-500">
                 <img
                   src="/assets/logo.svg"
                   alt="XFUSE"
-                  className={`w-10 h-10 rounded-lg group-hover:scale-110 transition-all duration-500 ${lightOn ? 'opacity-100 shadow-[0_0_20px_rgba(15,148,185,0.8)] filter drop-shadow-[0_0_8px_rgba(240,88,14,0.5)]' : 'opacity-40 brightness-50'}`}
+                  className={`w-8 h-8 md:w-10 md:h-10 rounded-xl transition-all duration-700 ${lightOn ? 'opacity-100 shadow-[0_0_30px_rgba(15,148,185,0.6)]' : 'opacity-20 grayscale'}`}
                 />
-                {lightOn && (
-                  <motion.div
-                    animate={{ opacity: [0.5, 1, 0.5] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="absolute inset-0 bg-primary/30 rounded-lg blur-xl"
-                  />
-                )}
-                <div className="absolute inset-0 bg-primary/20 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute inset-0 bg-primary/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
-              <span className={`text-xl font-bold bg-gradient-to-r from-primary via-magenta to-purple bg-clip-text text-transparent transition-all duration-700 ${lightOn ? 'opacity-100 scale-100' : 'opacity-30 scale-95 blur-[1px]'}`}>
-                XFUSE
-              </span>
+              <div className="flex flex-col items-start leading-none">
+                <span className={`text-lg md:text-2xl font-black tracking-tighter bg-gradient-to-r from-primary via-magenta to-purple bg-clip-text text-transparent transition-all duration-700 ${lightOn ? 'opacity-100' : 'opacity-20 blur-[2px]'}`}>
+                  XFUSE
+                </span>
+                <span className={`text-[8px] font-bold uppercase tracking-[0.2em] text-gray-500 transition-opacity duration-700 ${lightOn ? 'opacity-100' : 'opacity-0'}`}>
+                  Strategic Intelligence
+                </span>
+              </div>
             </button>
 
             {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-1">
-              {navItems.map((item) => (
+            <nav className="hidden xl:flex items-center gap-1 bg-white/5 rounded-full p-1 border border-white/5">
+              {navItems.slice(0, 8).map((item) => (
                 <button
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
                   className={`
-                    px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300
+                    px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all duration-500
                     ${activeSection === item.id
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-gray-400 dark:text-gray-600 hover:text-white dark:hover:text-black hover:bg-gray-800/50 dark:hover:bg-gray-200/50'
+                      ? 'bg-primary text-white shadow-[0_0_15px_rgba(15,148,185,0.4)]'
+                      : 'text-gray-400 hover:text-white hover:bg-white/5'
                     }
                   `}
                 >
@@ -125,31 +123,36 @@ export function Header({ lightOn }: HeaderProps) {
             </nav>
 
             {/* Right Side Actions */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 md:gap-4">
+              {/* Language Switcher - Premium Toggle Design */}
+              <button
+                onClick={toggleLanguage}
+                className="relative flex items-center bg-gray-900 border border-white/10 rounded-full p-1 w-16 h-8 group overflow-hidden"
+              >
+                <motion.div
+                  animate={{ x: lang === 'en' ? 0 : 32 }}
+                  className="w-6 h-6 bg-primary rounded-full shadow-lg z-10 flex items-center justify-center text-[8px] font-bold text-white uppercase"
+                >
+                  {lang === 'en' ? 'EN' : 'AR'}
+                </motion.div>
+                <div className="absolute inset-x-0 flex justify-around text-[8px] font-black text-gray-600">
+                  <span>AR</span>
+                  <span>EN</span>
+                </div>
+              </button>
+
               {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
-                className="p-2 rounded-lg bg-gray-800/50 dark:bg-gray-200/50 hover:bg-gray-800 dark:hover:bg-gray-300 text-gray-400 dark:text-gray-600 hover:text-white dark:hover:text-black transition-all duration-300"
-                aria-label="Toggle theme"
+                className="p-2 md:p-3 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-primary hover:border-primary/50 transition-all duration-500"
               >
-                {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-              </button>
-
-              {/* Language Toggle */}
-              <button
-                onClick={toggleLanguage}
-                className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-800/50 dark:bg-gray-200/50 hover:bg-gray-800 dark:hover:bg-gray-300 text-gray-400 dark:text-gray-600 hover:text-white dark:hover:text-black transition-all duration-300"
-                aria-label="Toggle language"
-              >
-                <Globe className="w-5 h-5" />
-                <span className="text-sm font-medium">{lang === 'en' ? 'AR' : 'EN'}</span>
+                {isDark ? <Sun className="w-4 h-4 md:w-5 h-5" /> : <Moon className="w-4 h-4 md:w-5 h-5" />}
               </button>
 
               {/* Mobile Menu Toggle */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-2 rounded-lg bg-gray-800/50 dark:bg-gray-200/50 hover:bg-gray-800 dark:hover:bg-gray-300 text-gray-400 dark:text-gray-600 hover:text-white dark:hover:text-black transition-all duration-300"
-                aria-label="Toggle menu"
+                className="xl:hidden p-2 rounded-xl bg-primary text-white shadow-lg shadow-primary/20"
               >
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
