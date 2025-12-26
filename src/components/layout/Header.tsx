@@ -64,13 +64,13 @@ export function Header({ lightOn }: HeaderProps) {
       <motion.header
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-7xl transition-all duration-500"
+        className="fixed top-0 left-0 w-full z-50 transition-all duration-300"
       >
         <div className={`
-          flex items-center justify-between px-6 py-3 rounded-2xl border transition-all duration-500
+          flex items-center justify-between px-6 py-4 md:px-12 transition-all duration-300 border-b
           ${scrolled
-            ? 'bg-darker/40 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.5)]'
-            : 'bg-transparent border-transparent'
+            ? 'bg-darker/80 backdrop-blur-xl border-white/5 shadow-lg'
+            : 'bg-transparent border-transparent py-6'
           }
         `}>
           {/* Logo & Branding */}
