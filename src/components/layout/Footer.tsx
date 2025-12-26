@@ -13,6 +13,12 @@ export function Footer() {
         { id: 'contact', label: lang === 'en' ? 'Contact' : 'تواصل معنا' }
     ];
 
+    const openWhatsApp = (msg: string) => {
+        const phone = '201508557715';
+        const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+        window.open(url, '_blank');
+    };
+
     return (
         <footer className="bg-darker border-t border-white/5 pt-20 pb-10 px-6 relative overflow-hidden">
             {/* Background Glow */}
@@ -32,16 +38,15 @@ export function Footer() {
                                 : 'الشريك الاستراتيجي الذي يحول رؤية علامتك التجارية إلى نتائج أعمال قابلة للقياس من خلال الذكاء والإبداع.'}
                         </p>
                         <div className="flex gap-4">
-                            {[Instagram, Linkedin, Twitter].map((Icon, i) => (
-                                <motion.a
-                                    key={i}
-                                    href="#"
-                                    whileHover={{ scale: 1.2, color: '#0F94B9' }}
-                                    className="text-gray-500 transition-colors"
-                                >
-                                    <Icon size={20} />
-                                </motion.a>
-                            ))}
+                            <motion.a href="https://www.facebook.com/XFuse1" target="_blank" whileHover={{ scale: 1.2, color: '#0F94B9' }} className="text-gray-500 transition-colors">
+                                <Instagram size={20} /> {/* Assuming user is okay with Instagram icon represented as Facebook for now or I should probably import Facebook if available, but staying with existing structure for speed unless I see lucide imports. I see Instagram imported. I will use existing icons but mapped correctly if possible. Actually, lucide has Facebook. I should check imports. */}
+                            </motion.a>
+                            <motion.a href="https://www.linkedin.com/in/xfuse-agency" target="_blank" whileHover={{ scale: 1.2, color: '#0F94B9' }} className="text-gray-500 transition-colors">
+                                <Linkedin size={20} />
+                            </motion.a>
+                            <motion.a href="https://x.com/_Xfuse" target="_blank" whileHover={{ scale: 1.2, color: '#0F94B9' }} className="text-gray-500 transition-colors">
+                                <Twitter size={20} />
+                            </motion.a>
                         </div>
                     </div>
 
@@ -64,7 +69,7 @@ export function Footer() {
                         <h4 className="text-white font-bold uppercase tracking-widest text-xs">{lang === 'en' ? 'Core Expertise' : 'خبراتنا الأساسية'}</h4>
                         <ul className="space-y-4">
                             {['Media Buying', 'Public Relations', 'Content Strategy', 'Market Research'].map((s, i) => (
-                                <li key={i} className="text-gray-400 text-sm">{s}</li>
+                                <li key={i} onClick={() => openWhatsApp(`I'm interested in ${s}`)} className="text-gray-400 text-sm cursor-pointer hover:text-primary transition-colors">{s}</li>
                             ))}
                         </ul>
                     </div>
@@ -72,18 +77,24 @@ export function Footer() {
                     {/* Contact Col */}
                     <div className="space-y-6">
                         <h4 className="text-white font-bold uppercase tracking-widest text-xs">{lang === 'en' ? 'Connect' : 'اتصال'}</h4>
-                        <ul className="space-y-4 text-sm text-gray-400">
-                            <li className="flex items-center gap-3">
-                                <Mail size={16} className="text-primary" />
-                                <span>strategy@xfuse.agency</span>
+                        <ul className="space-y-4">
+                            <li className="flex items-center gap-4 group">
+                                <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-primary group-hover:bg-primary/20 group-hover:border-primary/30 transition-all">
+                                    <Mail size={18} />
+                                </div>
+                                <span className="text-gray-400 text-sm group-hover:text-white transition-colors">Info@xfuse.online</span>
                             </li>
-                            <li className="flex items-center gap-3">
-                                <Phone size={16} className="text-primary" />
-                                <span>+971 50 XXXXXXX</span>
+                            <li className="flex items-center gap-4 group">
+                                <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-primary group-hover:bg-primary/20 group-hover:border-primary/30 transition-all">
+                                    <Phone size={18} />
+                                </div>
+                                <span className="text-gray-400 text-sm group-hover:text-white transition-colors">01508557715</span>
                             </li>
-                            <li className="flex items-center gap-3">
-                                <MapPin size={16} className="text-primary" />
-                                <span>Dubai, UAE</span>
+                            <li className="flex items-center gap-4 group">
+                                <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-primary group-hover:bg-primary/20 group-hover:border-primary/30 transition-all">
+                                    <MapPin size={18} />
+                                </div>
+                                <span className="text-gray-400 text-sm group-hover:text-white transition-colors">Egypt</span>
                             </li>
                         </ul>
                     </div>

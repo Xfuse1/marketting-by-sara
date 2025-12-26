@@ -1,7 +1,7 @@
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useSpring, animated } from '@react-spring/three';
-import { Float, RoundedBox, Sphere, MeshDistortMaterial, PerspectiveCamera, QuadraticBezierLine } from '@react-three/drei';
+import { Float, Sphere, MeshDistortMaterial, PerspectiveCamera } from '@react-three/drei';
 import * as THREE from 'three';
 
 interface HeroSceneProps {
@@ -11,66 +11,135 @@ interface HeroSceneProps {
 
 const Avatar = () => {
   const headRef = useRef<THREE.Group>(null);
-
   useFrame((state) => {
     if (headRef.current) {
       const t = state.clock.getElapsedTime();
       headRef.current.position.y = Math.sin(t * 0.5) * 0.05;
       headRef.current.rotation.y = Math.sin(t * 0.3) * 0.1;
-      headRef.current.rotation.x = Math.cos(t * 0.2) * 0.05;
     }
   });
 
   return (
-    <group position={[1.8, -1, 0]}>
-      {/* Stylized Body */}
-      <mesh position={[0, -0.5, 0]} castShadow>
+    <group position={[0, -2, -2]}>
+      {/* Moved Avatar slightly back to focus on interaction */}
+      <mesh position={[0, -0.5, 0]}>
         <cylinderGeometry args={[0.5, 0.7, 1.5, 32]} />
         <meshStandardMaterial color="#0b0f14" roughness={0.1} metalness={0.8} />
       </mesh>
-
-      {/* Head */}
       <group ref={headRef} position={[0, 0.5, 0]}>
         <Sphere args={[0.4, 32, 32]}>
-          <MeshDistortMaterial
-            color="#0F94B9"
-            speed={2}
-            distort={0.3}
-            radius={1}
-            emissive="#0F94B9"
-            emissiveIntensity={0.5}
-          />
+          <MeshDistortMaterial color="#0F94B9" speed={2} distort={0.3} radius={1} emissive="#0F94B9" emissiveIntensity={0.5} />
         </Sphere>
-        <pointLight intensity={1} color="#0F94B9" distance={2} />
       </group>
-
-      {/* Shoulder Joint for Cable */}
-      <mesh position={[-0.4, -0.2, 0.2]}>
-        <sphereGeometry args={[0.12, 16, 16]} />
-        <meshStandardMaterial color="#111" />
-      </mesh>
     </group>
   );
 };
 
-const DraggablePlug = ({ onConnect }: { onConnect: () => void }) => {
+// --- New "Slide to Unlock" Style Components ---
+
+const GuideTrack = ({ start, end }: { start: THREE.Vector3, end: THREE.Vector3 }) => {
+  const width = Math.abs(end.x - start.x);
+  const center = (start.x + end.x) / 2;
+
+  return (
+    <group position={[center, start.y, 0]}>
+      {/* The Track Line */}
+      <mesh rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.05, 0.05, width, 16]} />
+        <meshStandardMaterial color="#222" metalness={0.8} roughness={0.2} />
+      </mesh>
+      {/* Glow under track */}
+      <mesh position={[0, -0.1, 0]} rotation={[0, 0, Math.PI / 2]}>
+        <planeGeometry args={[width, 0.2]} />
+        <meshBasicMaterial color="#0F94B9" transparent opacity={0.1} side={THREE.DoubleSide} />
+      </mesh>
+      {/* Arrows indicating direction */}
+      <group position={[0, 0.2, 0]}>
+        {[-1, 0, 1].map((offset) => (
+          <mesh key={offset} position={[offset * 0.5, 0, 0]} rotation={[0, 0, -Math.PI / 2]}>
+            <coneGeometry args={[0.08, 0.2, 3]} />
+            <meshBasicMaterial color="#333" />
+          </mesh>
+        ))}
+      </group>
+    </group>
+  );
+};
+
+const ActivationCore = ({ onClick }: { onClick: () => void }) => {
+  const [hovered, setHovered] = useState(false);
+
+  // Pulse effect
+  const { scale, intensity } = useSpring({
+    from: { scale: 1, intensity: 1 },
+    to: async (next) => {
+      while (true) {
+        await next({ scale: 1.1, intensity: 2 });
+        await next({ scale: 1, intensity: 1 });
+      }
+    },
+    config: { duration: 1000 }
+  }) as any;
+
+  return (
+    <animated.group
+      position={[2.5, 0, 0]}
+      scale={scale}
+      onClick={(e) => { e.stopPropagation(); onClick(); }}
+      onPointerOver={() => { setHovered(true); document.body.style.cursor = 'pointer'; }}
+      onPointerOut={() => { setHovered(false); document.body.style.cursor = 'auto'; }}
+    >
+      {/* Outer Ring */}
+      <mesh rotation={[0, Math.PI / 2, 0]}>
+        <torusGeometry args={[0.8, 0.1, 16, 32]} />
+        <meshStandardMaterial color="#111" metalness={0.9} roughness={0.1} />
+      </mesh>
+
+      {/* Inner Target Sphere */}
+      <mesh>
+        <sphereGeometry args={[0.4, 32, 32]} />
+        <animated.meshStandardMaterial
+          color="#000"
+          emissive="#0F94B9"
+          emissiveIntensity={intensity}
+          transparent
+          opacity={0.8}
+        />
+      </mesh>
+
+      {/* Target Ring Glow */}
+      <mesh rotation={[0, Math.PI / 2, 0]}>
+        <ringGeometry args={[0.5, 0.7, 32]} />
+        <meshBasicMaterial color="#0F94B9" transparent opacity={hovered ? 0.4 : 0.1} side={THREE.DoubleSide} />
+      </mesh>
+
+      <pointLight color="#0F94B9" intensity={2} distance={4} />
+    </animated.group>
+  );
+};
+
+const SlidingKey = ({ onConnect, autoTrigger }: { onConnect: () => void, autoTrigger: number }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [connected, setConnected] = useState(false);
-  const [showSpark, setShowSpark] = useState(false);
-  const plugRef = useRef<THREE.Group>(null);
-  const [pos, setPos] = useState<[number, number, number]>([-1.8, -0.5, 1.5]);
+  const [pos, setPos] = useState<[number, number, number]>([-2.5, 0, 0]);
 
-  const targetSocket = new THREE.Vector3(2.5, 0.2, 0);
-  const avatarShoulder = new THREE.Vector3(1.4, -1.2, 0.2);
+  const startX = -2.5;
+  const endX = 2.5;
 
-  const { springPos, springRotation, emissiveIntensity, bulbScale, plugScale, cableOpacity } = useSpring({
-    springPos: connected ? [2.1, 0.2, 0] : pos,
-    springRotation: connected ? [0, Math.PI / 2, 0] : [0, 0, isDragging ? 0.2 : -0.2],
-    emissiveIntensity: connected ? 15 : isDragging ? 2 : 0.4,
-    bulbScale: connected ? 1.2 : 0,
-    plugScale: connected ? 0.35 : 1,
-    cableOpacity: connected ? 0.5 : 1,
-    config: { mass: 1, tension: 180, friction: 28 }
+  useEffect(() => {
+    if (autoTrigger > 0 && !connected) {
+      completeConnection();
+    }
+  }, [autoTrigger]);
+
+  const completeConnection = () => {
+    setConnected(true);
+    onConnect();
+  };
+
+  const { springX } = useSpring({
+    springX: connected ? endX - 0.5 : pos[0],
+    config: { tension: 120, friction: 14 }
   }) as any;
 
   const handlePointerDown = (e: any) => {
@@ -83,151 +152,67 @@ const DraggablePlug = ({ onConnect }: { onConnect: () => void }) => {
   const handlePointerUp = () => {
     setIsDragging(false);
     document.body.style.cursor = 'auto';
-
-    const currentPos = new THREE.Vector3(...pos);
-    if (currentPos.distanceTo(targetSocket) < 1.2) {
-      setConnected(true);
-      setShowSpark(true);
-      setTimeout(() => setShowSpark(false), 200);
-      onConnect();
+    if (pos[0] > 0) { // If dragged past middle
+      completeConnection();
     } else {
-      setPos([-1.8, -0.5, 1.5]);
+      setPos([startX, 0, 0]); // Snap back
     }
   };
 
   const handlePointerMove = (e: any) => {
     if (!isDragging || connected) return;
-    const x = e.intersections[0]?.point.x || e.point.x;
-    const y = e.intersections[0]?.point.y || e.point.y;
-    // Constrain to reasonable area
-    setPos([Math.min(Math.max(x, -4), 1.5), Math.min(Math.max(y, -3), 3), 1.5]);
+    // Constrain to track X axis
+    const newX = Math.min(Math.max(e.point.x, startX), endX - 0.5);
+    setPos([newX, 0, 0]);
   };
 
   return (
-    <group>
-      {/* Flexible Power Cable */}
-      <QuadraticBezierLine
-        start={avatarShoulder}
-        end={new THREE.Vector3(...pos).add(new THREE.Vector3(-0.6, 0, 0))}
-        mid={new THREE.Vector3((avatarShoulder.x + pos[0]) / 2, Math.min(avatarShoulder.y, pos[1]) - 1, (avatarShoulder.z + pos[2]) / 2)}
-        color={connected ? "#F0580E" : "#111"}
-        lineWidth={3}
-        transparent
-        opacity={cableOpacity}
-      />
+    <>
+      <GuideTrack start={new THREE.Vector3(startX, 0, 0)} end={new THREE.Vector3(endX, 0, 0)} />
 
       <animated.group
-        ref={plugRef}
-        position={springPos}
-        rotation={springRotation}
+        position-x={springX}
+        position-y={0}
+        position-z={0}
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
         onPointerMove={handlePointerMove}
       >
-        <animated.group scale={plugScale}>
-          <Float speed={connected ? 0 : 3} rotationIntensity={0.3} floatIntensity={0.8}>
-            {/* Main Plug Body */}
-            <RoundedBox args={[0.8, 0.5, 0.5]} radius={0.12} castShadow>
-              <meshStandardMaterial
-                color={connected ? "#F0580E" : "#1a1a1a"}
-                emissive={connected ? "#F0580E" : "#0F94B9"}
-                emissiveIntensity={emissiveIntensity}
-                roughness={0.2}
-                metalness={0.8}
-              />
-            </RoundedBox>
+        <Float speed={connected ? 0 : 2} floatIntensity={0.2} floatingRange={[-0.1, 0.1]}>
+          {/* The Key Object */}
+          <mesh rotation={[0, 0, Math.PI / 2]}>
+            <capsuleGeometry args={[0.3, 1.2, 4, 16]} />
+            <meshStandardMaterial color="#222" metalness={0.8} roughness={0.2} />
+          </mesh>
 
-            {/* Detailed Pins */}
-            <mesh position={[0.5, 0.12, 0]} rotation={[0, 0, -Math.PI / 2]}>
-              <cylinderGeometry args={[0.045, 0.045, 0.5]} />
-              <meshStandardMaterial color="#c0c0c0" metalness={1} roughness={0.1} />
-            </mesh>
-            <mesh position={[0.5, -0.12, 0]} rotation={[0, 0, -Math.PI / 2]}>
-              <cylinderGeometry args={[0.045, 0.045, 0.5]} />
-              <meshStandardMaterial color="#c0c0c0" metalness={1} roughness={0.1} />
-            </mesh>
+          {/* Visual Handle / Grip */}
+          <mesh rotation={[0, 0, Math.PI / 2]}>
+            <torusGeometry args={[0.35, 0.05, 8, 16]} />
+            <meshStandardMaterial color="#F0580E" emissive="#F0580E" emissiveIntensity={2} />
+          </mesh>
 
-            {/* Cable Strain Relief */}
-            <mesh position={[-0.5, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-              <cylinderGeometry args={[0.08, 0.12, 0.3, 16]} />
-              <meshStandardMaterial color="#000" />
-            </mesh>
-          </Float>
-        </animated.group>
-
-        {/* Spark/Flash Effect on connection */}
-        {showSpark && (
-          <group position={[0.5, 0, 0]}>
-            <Sphere args={[0.5, 16, 16]}>
-              <meshBasicMaterial color="#fff" transparent opacity={0.8} />
-            </Sphere>
-            <pointLight intensity={50} color="#fff" distance={5} />
-          </group>
-        )}
-
-        {/* Energy Aura when connected */}
-        <animated.group scale={bulbScale}>
-          <Sphere args={[1.2, 32, 32]}>
-            <MeshDistortMaterial
-              color="#F0580E"
-              emissive="#F0580E"
-              emissiveIntensity={5}
-              transparent
-              opacity={0.4}
-              speed={4}
-              distort={0.4}
-            />
-          </Sphere>
-          <pointLight intensity={15} color="#F0580E" distance={12} />
-        </animated.group>
+          {/* Arrow inside key */}
+          <mesh position={[0.2, 0, 0]} rotation={[0, 0, -Math.PI / 2]}>
+            <coneGeometry args={[0.1, 0.3, 32]} />
+            <meshBasicMaterial color="#F0580E" />
+          </mesh>
+        </Float>
       </animated.group>
-    </group>
-  );
-};
-
-const Socket = () => {
-  return (
-    <group position={[2.5, 0.2, 0]}>
-      {/* Socket Wall Plate */}
-      <RoundedBox args={[0.7, 1.2, 0.3]} radius={0.08} receiveShadow>
-        <meshStandardMaterial color="#111" roughness={0.4} metalness={0.3} />
-      </RoundedBox>
-
-      {/* Decorative inner ring */}
-      <mesh position={[-0.16, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[0.35, 0.35, 0.05, 32]} />
-        <meshStandardMaterial color="#080808" />
-      </mesh>
-
-      {/* Socket Holes */}
-      <mesh position={[-0.16, 0.12, 0]} rotation={[0, 0, Math.PI / 2]}>
-        <circleGeometry args={[0.06]} />
-        <meshBasicMaterial color="#000" />
-      </mesh>
-      <mesh position={[-0.16, -0.12, 0]} rotation={[0, 0, Math.PI / 2]}>
-        <circleGeometry args={[0.06]} />
-        <meshBasicMaterial color="#000" />
-      </mesh>
-
-      {/* Subtle "Power Available" Glow */}
-      <mesh position={[-0.17, 0, 0]}>
-        <circleGeometry args={[0.38]} />
-        <meshBasicMaterial color="#0F94B9" transparent opacity={0.05} />
-      </mesh>
-      <rectAreaLight width={0.5} height={1} intensity={2} color="#0F94B9" position={[-0.2, 0, 0]} rotation={[0, -Math.PI / 2, 0]} />
-    </group>
+    </>
   );
 };
 
 export const HeroScene = ({ onConnect, isWeakDevice }: HeroSceneProps) => {
+  const [trigger, setTrigger] = useState(0);
+
   if (isWeakDevice) {
     return (
       <div className="w-full h-full flex items-center justify-center bg-darker">
-        <div className="relative group cursor-pointer" onClick={() => onConnect()}>
+        <div className="relative group cursor-pointer" onClick={onConnect}>
           <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150 group-hover:bg-primary/40 transition-all duration-700" />
           <div className="w-64 h-64 border-4 border-dashed border-primary/30 rounded-full flex items-center justify-center animate-spin-slow">
             <div className="w-48 h-48 bg-brand-gradient rounded-full flex items-center justify-center shadow-2xl">
-              <span className="text-white font-bold text-xl tracking-widest text-shadow">CONNECT</span>
+              <span className="text-white font-bold text-xl tracking-widest text-shadow">START</span>
             </div>
           </div>
         </div>
@@ -237,28 +222,26 @@ export const HeroScene = ({ onConnect, isWeakDevice }: HeroSceneProps) => {
 
   return (
     <div className="w-full h-full">
-      <Canvas shadows dpr={[1, 2]}>
-        <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={45} />
-
+      <Canvas shadows dpr={[1, 2]} camera={{ position: [0, 0, 6], fov: 45 }}>
         <color attach="background" args={['#0b0f14']} />
+        <fog attach="fog" args={['#0b0f14', 5, 15]} />
 
-        <ambientLight intensity={0.4} />
-        <spotLight
-          position={[5, 5, 5]}
-          angle={0.15}
-          penumbra={1}
-          intensity={2}
-          castShadow
-          shadow-mapSize={[1024, 1024]}
-        />
-        <pointLight position={[-5, 5, 5]} intensity={1} color="#0F94B9" />
+        <ambientLight intensity={0.5} />
+        <pointLight position={[0, 5, 5]} intensity={1} color="#0F94B9" />
         <pointLight position={[0, -5, 5]} intensity={0.5} color="#A20870" />
 
-        <Avatar />
-        <DraggablePlug onConnect={onConnect} />
-        <Socket />
+        {/* Catch-all plane for easier dragging */}
+        <mesh position={[0, 0, -1]} visible={false}>
+          <planeGeometry args={[20, 10]} />
+        </mesh>
 
-        <fog attach="fog" args={['#0b0f14', 4, 12]} />
+        <Avatar />
+
+        <group position={[0, 0, 0]}>
+          <SlidingKey onConnect={onConnect} autoTrigger={trigger} />
+          <ActivationCore onClick={() => setTrigger(t => t + 1)} />
+        </group>
+
       </Canvas>
     </div>
   );
