@@ -29,7 +29,7 @@ export function Footer() {
                     {/* Brand Col */}
                     <div className="space-y-6">
                         <div className="flex items-center gap-3">
-                            <img src="/assets/logo.svg" alt="XFUSE" className="w-12 h-12 shadow-[0_0_20px_rgba(15,148,185,0.3)]" />
+                            <img src="/assets/logo.svg" alt="XFUSE" className="w-12 h-12" />
                             <span className="text-3xl font-black bg-brand-gradient bg-clip-text text-transparent italic">XFUSE</span>
                         </div>
                         <p className="text-gray-400 text-sm leading-relaxed max-w-xs">

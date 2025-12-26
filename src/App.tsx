@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Global3DBackground } from './components/3d/GlobalBackground';
@@ -13,6 +13,7 @@ import { SpecialOfferSection } from './components/sections/SpecialOfferSection';
 import { SpecialOfferBanner } from './components/ui/SpecialOfferBanner';
 import { QuickActions } from './components/ui/QuickActions';
 import { Repository } from './data/repository';
+import type { Service } from './data/types';
 
 import { Hero } from './components/sections/Hero';
 import { TeamSection } from './components/sections/TeamSection';
@@ -26,6 +27,15 @@ function App() {
   const [lightOn, setLightOn] = useState(true); // Always on
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const [servicesData, setServicesData] = useState<Service[]>([]);
+  const [servicesLoading, setServicesLoading] = useState(true);
+
+  useEffect(() => {
+    Repository.getServices()
+      .then(setServicesData)
+      .finally(() => setServicesLoading(false));
+  }, []);
+
   const handleBookSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
@@ -38,15 +48,6 @@ function App() {
     setIsModalOpen(false);
     alert(t('modal.success') || 'Consultation booked successfully!');
   };
-
-  const services = [
-    { title: 'Strategic Planning', icon: '🧠', desc: 'Crafting long-term visions with precision execution.' },
-    { title: 'Media Buying', icon: '📈', desc: 'Maximizing visibility and ROAS across all digital frontiers.' },
-    { title: 'Public Relations', icon: '🌍', desc: 'Shaping perception and building cultural resonance.' },
-    { title: 'Content Strategy', icon: '💡', desc: 'Narratives that engage, inspire, and drive action.' },
-    { title: 'Market Intelligence', icon: '🔬', desc: 'Data-driven insights to outpace competition.' },
-    { title: 'Community Management', icon: '🤝', desc: 'Cultivating digital ecosystems for your brand.' }
-  ];
 
   return (
     <div className={`relative min-h-screen transition-colors duration-300 text-white bg-darker dark:bg-white`}>
@@ -94,27 +95,50 @@ function App() {
           <section id="services" className="py-32 px-6">
             <div className="max-w-7xl mx-auto">
               <div className="text-center mb-24">
-                <h2 className="text-5xl md:text-7xl font-black mb-6 bg-brand-gradient bg-clip-text text-transparent uppercase tracking-tighter italic">Our Expertise</h2>
-                <p className="text-gray-500 font-bold tracking-[0.3em] uppercase text-xs">Strategic depth in every move</p>
+                <h2 className="text-5xl md:text-7xl font-black mb-6 bg-brand-gradient bg-clip-text text-transparent uppercase tracking-tighter italic">
+                  {i18n.language === 'en' ? 'Our Expertise' : 'خبراتنا'}
+                </h2>
+                <p className="text-gray-500 font-bold tracking-[0.3em] uppercase text-xs">
+                  {i18n.language === 'en' ? 'Strategic depth in every move' : 'عمق استراتيجي في كل خطوة'}
+                </p>
               </div>
-              <div className="grid md:grid-cols-3 gap-8">
-                {services.map((item, i) => (
-                  <motion.div
-                    key={i}
-                    whileHover={{ y: -10 }}
-                    onClick={() => {
-                      const phone = '201508557715';
-                      const msg = `I'm interested in ${item.title}`;
-                      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
-                    }}
-                    className="bg-white/5 backdrop-blur-3xl border border-white/10 p-10 rounded-[2.5rem] group cursor-pointer hover:border-primary/50 transition-all"
-                  >
-                    <div className="text-5xl mb-6 group-hover:rotate-12 transition-transform inline-block">{item.icon}</div>
-                    <h3 className="text-2xl font-bold mb-4 text-white uppercase tracking-tight">{item.title}</h3>
-                    <p className="text-gray-400 text-sm leading-relaxed">{item.desc}</p>
-                  </motion.div>
-                ))}
-              </div>
+
+              {servicesLoading ? (
+                <div className="flex items-center justify-center h-40">
+                  <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+                </div>
+              ) : (
+                <div className="grid md:grid-cols-3 gap-8">
+                  {servicesData.map((item, i) => {
+                    const icons: Record<string, string> = {
+                      s1: '🧠', s2: '📈', s3: '💡', s4: '🔬', s5: '🤝', s6: '🌍'
+                    };
+                    const icon = icons[item.id] || '✨';
+                    const lang = i18n.language as 'en' | 'ar';
+
+                    return (
+                      <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.1 }}
+                        whileHover={{ y: -10 }}
+                        onClick={() => {
+                          const phone = '201508557715';
+                          const msg = `I'm interested in ${item.title[lang]}`;
+                          window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+                        }}
+                        className="bg-white/5 backdrop-blur-3xl border border-white/10 p-10 rounded-[2.5rem] group cursor-pointer hover:border-primary/50 transition-all"
+                      >
+                        <div className="text-5xl mb-6 group-hover:rotate-12 transition-transform inline-block">{icon}</div>
+                        <h3 className="text-2xl font-bold mb-4 text-white uppercase tracking-tight">{item.title[lang]}</h3>
+                        <p className="text-gray-400 text-sm leading-relaxed">{item.description[lang]}</p>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </section>
 

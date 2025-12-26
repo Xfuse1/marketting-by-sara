@@ -12,8 +12,6 @@ const navItems = [
   { id: 'process', label_en: 'Process', label_ar: 'العملية' },
   { id: 'team', label_en: 'Team', label_ar: 'الفريق' },
   { id: 'case-studies', label_en: 'Case Studies', label_ar: 'دراسات الحالة' },
-  { id: 'special-offer', label_en: 'Special Offer', label_ar: 'عرض خاص' },
-  { id: 'faq', label_en: 'FAQ', label_ar: 'الأسئلة' },
   { id: 'contact', label_en: 'Contact', label_ar: 'تواصل' }
 ];
 
@@ -29,14 +27,11 @@ export function Header({ lightOn }: HeaderProps) {
   const [activeSection, setActiveSection] = useState('home');
   const lang = i18n.language as 'en' | 'ar';
 
-  // Handle scroll for background blur effect
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-
-      // Simple active section detection
+      setScrolled(window.scrollY > 20);
       const sections = navItems.map(item => document.getElementById(item.id));
-      const scrollPosition = window.scrollY + 150;
+      const scrollPosition = window.scrollY + 200;
 
       for (let i = sections.length - 1; i >= 0; i--) {
         const section = sections[i];
@@ -46,7 +41,6 @@ export function Header({ lightOn }: HeaderProps) {
         }
       }
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -70,169 +64,116 @@ export function Header({ lightOn }: HeaderProps) {
       <motion.header
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className={`
-          fixed top-4 left-4 right-4 z-50 transition-all duration-500
-          ${scrolled
-            ? 'bg-darker/40 dark:bg-white/40 backdrop-blur-2xl border border-white/10 dark:border-black/5 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] rounded-2xl'
-            : 'bg-transparent'
-          }
-        `}
+        className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-7xl transition-all duration-500"
       >
-        <div className="max-w-7xl mx-auto px-4 md:px-8">
-          <div className="flex items-center justify-between h-16 md:h-20">
-            {/* Logo */}
+        <div className={`
+          flex items-center justify-between px-6 py-3 rounded-2xl border transition-all duration-500
+          ${scrolled
+            ? 'bg-darker/40 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.5)]'
+            : 'bg-transparent border-transparent'
+          }
+        `}>
+          {/* Logo & Branding */}
+          <button onClick={() => scrollToSection('home')} className="flex items-center gap-3 group">
+            <div className="relative group-hover:scale-110 transition-transform duration-500">
+              <img
+                src="/assets/logo.svg"
+                alt="XFUSE"
+                className="w-10 h-10 object-contain drop-shadow-[0_0_15px_rgba(15,148,185,0.4)]"
+              />
+            </div>
+            <div className="flex flex-col items-start leading-none">
+              <span className="text-xl md:text-2xl font-black tracking-tighter bg-brand-gradient bg-clip-text text-transparent">XFUSE</span>
+              <span className="text-[8px] font-bold uppercase tracking-[0.3em] text-gray-400">Strategic Intelligence</span>
+            </div>
+          </button>
+
+          {/* Desktop Nav - Floating Style */}
+          <nav className="hidden xl:flex items-center gap-1 bg-white/5 rounded-full p-1 border border-white/5">
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => scrollToSection(item.id)}
+                className={`
+                  px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all duration-300
+                  ${activeSection === item.id
+                    ? 'bg-primary text-white shadow-lg shadow-primary/30'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'}
+                `}
+              >
+                {lang === 'en' ? item.label_en : item.label_ar}
+              </button>
+            ))}
+          </nav>
+
+          {/* Actions */}
+          <div className="flex items-center gap-3">
+            {/* Premium Language Toggle */}
             <button
-              onClick={() => scrollToSection('home')}
-              className="flex items-center gap-3 group relative"
+              onClick={toggleLanguage}
+              className="relative w-16 h-8 bg-gray-900 border border-white/10 rounded-full p-1 flex items-center group cursor-pointer"
             >
-              <div className="relative transform group-hover:rotate-12 transition-transform duration-500">
-                <img
-                  src="/assets/logo.svg"
-                  alt="XFUSE"
-                  className={`w-8 h-8 md:w-10 md:h-10 rounded-xl transition-all duration-700 ${lightOn ? 'opacity-100 shadow-[0_0_30px_rgba(15,148,185,0.6)]' : 'opacity-20 grayscale'}`}
-                />
-                <div className="absolute inset-0 bg-primary/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-              <div className="flex flex-col items-start leading-none">
-                <span className={`text-lg md:text-2xl font-black tracking-tighter bg-gradient-to-r from-primary via-magenta to-purple bg-clip-text text-transparent transition-all duration-700 ${lightOn ? 'opacity-100' : 'opacity-20 blur-[2px]'}`}>
-                  XFUSE
-                </span>
-                <span className={`text-[8px] font-bold uppercase tracking-[0.2em] text-gray-500 transition-opacity duration-700 ${lightOn ? 'opacity-100' : 'opacity-0'}`}>
-                  Strategic Intelligence
-                </span>
+              <motion.div
+                animate={{ x: lang === 'en' ? 0 : 32 }}
+                className="w-6 h-6 bg-primary rounded-full z-10 flex items-center justify-center text-[8px] font-black text-white"
+              >
+                {lang === 'en' ? 'EN' : 'AR'}
+              </motion.div>
+              <div className="absolute inset-0 flex justify-around items-center text-[7px] font-bold text-gray-500 px-2 select-none">
+                <span>AR</span>
+                <span>EN</span>
               </div>
             </button>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden xl:flex items-center gap-1 bg-white/5 rounded-full p-1 border border-white/5">
-              {navItems.slice(0, 8).map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => scrollToSection(item.id)}
-                  className={`
-                    px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all duration-500
-                    ${activeSection === item.id
-                      ? 'bg-primary text-white shadow-[0_0_15px_rgba(15,148,185,0.4)]'
-                      : 'text-gray-400 hover:text-white hover:bg-white/5'
-                    }
-                  `}
-                >
-                  {lang === 'en' ? item.label_en : item.label_ar}
-                </button>
-              ))}
-            </nav>
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white transition-colors"
+            >
+              {isDark ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
 
-            {/* Right Side Actions */}
-            <div className="flex items-center gap-2 md:gap-4">
-              {/* Language Switcher - Premium Toggle Design */}
-              <button
-                onClick={toggleLanguage}
-                className="relative flex items-center bg-gray-900 border border-white/10 rounded-full p-1 w-16 h-8 group overflow-hidden"
-              >
-                <motion.div
-                  animate={{ x: lang === 'en' ? 0 : 32 }}
-                  className="w-6 h-6 bg-primary rounded-full shadow-lg z-10 flex items-center justify-center text-[8px] font-bold text-white uppercase"
-                >
-                  {lang === 'en' ? 'EN' : 'AR'}
-                </motion.div>
-                <div className="absolute inset-x-0 flex justify-around text-[8px] font-black text-gray-600">
-                  <span>AR</span>
-                  <span>EN</span>
-                </div>
-              </button>
-
-              {/* Theme Toggle */}
-              <button
-                onClick={toggleTheme}
-                className="p-2 md:p-3 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-primary hover:border-primary/50 transition-all duration-500"
-              >
-                {isDark ? <Sun className="w-4 h-4 md:w-5 h-5" /> : <Moon className="w-4 h-4 md:w-5 h-5" />}
-              </button>
-
-              {/* Mobile Menu Toggle */}
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="xl:hidden p-2 rounded-xl bg-primary text-white shadow-lg shadow-primary/20"
-              >
-                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-              </button>
-            </div>
+            {/* Mobile Toggle */}
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="xl:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-primary text-white"
+            >
+              <Menu size={20} />
+            </button>
           </div>
         </div>
       </motion.header>
 
-      {/* Mobile Sidebar Menu */}
+      {/* Mobile Menu Re-implemented */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <>
-            {/* Backdrop */}
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setMobileMenuOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+              className="fixed inset-0 bg-black/80 backdrop-blur-md z-[60]"
             />
-
-            {/* Sidebar */}
             <motion.div
-              initial={{ x: lang === 'ar' ? 320 : -320 }}
+              initial={{ x: lang === 'ar' ? 300 : -300 }}
               animate={{ x: 0 }}
-              exit={{ x: lang === 'ar' ? 320 : -320 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className={`
-                fixed top-0 ${lang === 'ar' ? 'right-0' : 'left-0'} bottom-0 w-80
-                bg-darker border-${lang === 'ar' ? 'l' : 'r'} border-gray-800
-                z-50 lg:hidden overflow-y-auto
-              `}
+              exit={{ x: lang === 'ar' ? 300 : -300 }}
+              className={`fixed top-0 ${lang === 'ar' ? 'right-0' : 'left-0'} h-full w-80 bg-darker z-[70] p-8 border-${lang === 'ar' ? 'l' : 'r'} border-white/10`}
             >
-              <div className="p-6">
-                {/* Sidebar Header */}
-                <div className="flex items-center justify-between mb-8">
-                  <div className="flex items-center gap-3">
-                    <img src="/assets/logo.svg" alt="XFUSE" className="w-10 h-10 rounded-lg" />
-                    <span className="text-xl font-bold bg-gradient-to-r from-primary via-magenta to-purple bg-clip-text text-transparent">
-                      XFUSE
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="p-2 rounded-lg hover:bg-gray-800 text-gray-400 hover:text-white"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-
-                {/* Navigation Links */}
-                <nav className="space-y-2 mb-8">
-                  {navItems.map((item) => (
-                    <button
-                      key={item.id}
-                      onClick={() => scrollToSection(item.id)}
-                      className={`
-                        w-full text-${lang === 'ar' ? 'right' : 'left'} px-4 py-3 rounded-lg font-medium transition-all duration-300
-                        ${activeSection === item.id
-                          ? 'bg-primary/10 text-primary border border-primary/20'
-                          : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
-                        }
-                      `}
-                    >
-                      {lang === 'en' ? item.label_en : item.label_ar}
-                    </button>
-                  ))}
-                </nav>
-
-                {/* Language Toggle (Mobile) */}
-                <button
-                  onClick={toggleLanguage}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gray-800/50 hover:bg-gray-800 text-gray-400 hover:text-white transition-all duration-300"
-                >
-                  <Globe className="w-5 h-5" />
-                  <span className="text-sm font-medium">
-                    {lang === 'en' ? 'العربية' : 'English'}
-                  </span>
-                </button>
+              <div className="flex justify-between items-center mb-10">
+                <span className="text-2xl font-black bg-brand-gradient bg-clip-text text-transparent italic">XFUSE</span>
+                <button onClick={() => setMobileMenuOpen(false)}><X className="text-white" /></button>
               </div>
+              <nav className="flex flex-col gap-4">
+                {navItems.map(item => (
+                  <button
+                    key={item.id}
+                    onClick={() => scrollToSection(item.id)}
+                    className="text-left py-2 text-gray-400 hover:text-white text-lg font-bold uppercase tracking-tighter"
+                  >
+                    {lang === 'en' ? item.label_en : item.label_ar}
+                  </button>
+                ))}
+              </nav>
             </motion.div>
           </>
         )}

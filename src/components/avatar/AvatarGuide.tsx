@@ -151,7 +151,7 @@ export const AvatarGuide = ({ stage, setStage, onBookClick }: AvatarProps) => {
       >
         <div className="w-16 h-16 rounded-full border-4 border-white shadow-2xl overflow-hidden bg-brand-gradient p-1">
           <div className="w-full h-full rounded-full bg-darker flex items-center justify-center text-white overflow-hidden">
-            <img src="/assets/team/member2.png" alt="XFUSE Guide" className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
+            <img src="/assets/avatar_guide.png" alt="XFUSE Guide" className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
           </div>
         </div>
         {!isOpen && (

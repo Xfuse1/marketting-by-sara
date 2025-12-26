@@ -17,7 +17,7 @@ export const Hero: React.FC<HeroProps> = ({ stage, setStage, onConnect, lightOn,
     <section id="home" className="h-screen flex flex-col items-center justify-center relative overflow-hidden bg-darker">
       {/* Dynamic background element for premium feel */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] bg-brand-gradient opacity-10 blur-[100px] rounded-full animate-pulse-slow" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] bg-brand-gradient opacity-10 blur-[100px] rounded-full" />
       </div>
 
       <AnimatePresence>

@@ -129,7 +129,7 @@ export function SpecialOfferSection({ onBookClick }: SpecialOfferSectionProps) {
                       {lang === 'en' ? 'Offer ends in' : 'ينتهي العرض في'}
                     </span>
                   </div>
-                  <div className="grid grid-cols-4 gap-4 max-w-lg">
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-lg">
                     {[
                       { value: timeLeft.days, label: lang === 'en' ? 'Days' : 'أيام' },
                       { value: timeLeft.hours, label: lang === 'en' ? 'Hours' : 'ساعات' },
@@ -138,12 +138,12 @@ export function SpecialOfferSection({ onBookClick }: SpecialOfferSectionProps) {
                     ].map((item, idx) => (
                       <div
                         key={idx}
-                        className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-4 text-center"
+                        className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-lg p-3 md:p-4 text-center"
                       >
-                        <div className="text-3xl font-bold text-primary mb-1">
+                        <div className="text-2xl md:text-3xl font-bold text-primary mb-1">
                           {String(item.value).padStart(2, '0')}
                         </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-600 uppercase">{item.label}</div>
+                        <div className="text-[10px] md:text-xs text-gray-500 dark:text-gray-600 uppercase">{item.label}</div>
                       </div>
                     ))}
                   </div>

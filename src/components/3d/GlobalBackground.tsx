@@ -1,54 +1,63 @@
 import { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Instances, Instance } from '@react-three/drei';
+import { Plane, MeshDistortMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 
-const Particles = () => {
-  const ref = useRef<THREE.Group>(null);
+const FluidMesh = () => {
+  const meshRef = useRef<THREE.Mesh>(null);
+
   useFrame((state) => {
-    if (ref.current) {
-      ref.current.rotation.y = state.clock.elapsedTime * 0.08;
-      ref.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.05) * 0.15;
+    if (meshRef.current) {
+      meshRef.current.rotation.z = state.clock.elapsedTime * 0.05;
     }
   });
 
   return (
-    <group ref={ref}>
-      <Instances range={40}>
-        <icosahedronGeometry args={[0.8, 0]} />
-        <meshStandardMaterial
-          color="#A20870"
-          wireframe
-          transparent
-          opacity={0.4}
-          emissive="#A20870"
-          emissiveIntensity={0.3}
-        />
-        {Array.from({ length: 40 }).map((_, i) => (
-          <Instance
-            key={i}
-            position={[
-              (Math.random() - 0.5) * 20,
-              (Math.random() - 0.5) * 20,
-              (Math.random() - 0.5) * 10 - 5
-            ]}
-            scale={Math.random() * 2.5 + 0.8}
-            rotation={[Math.random() * Math.PI, Math.random() * Math.PI, 0]}
-          />
-        ))}
-      </Instances>
-    </group>
+    <Plane args={[30, 30, 32, 32]} rotation={[0, 0, 0]}>
+      <MeshDistortMaterial
+        color="#020406"
+        speed={1.5}
+        distort={0.4}
+        radius={1}
+      >
+        {/* Custom gradient behavior via lights */}
+      </MeshDistortMaterial>
+    </Plane>
+  );
+};
+
+const LightSystem = () => {
+  const light1 = useRef<THREE.PointLight>(null);
+  const light2 = useRef<THREE.PointLight>(null);
+
+  useFrame((state) => {
+    const t = state.clock.elapsedTime;
+    if (light1.current) {
+      light1.current.position.x = Math.sin(t * 0.5) * 10;
+      light1.current.position.y = Math.cos(t * 0.3) * 10;
+    }
+    if (light2.current) {
+      light2.current.position.x = Math.cos(t * 0.4) * -10;
+      light2.current.position.y = Math.sin(t * 0.6) * -10;
+    }
+  });
+
+  return (
+    <>
+      <pointLight ref={light1} distance={20} intensity={15} color="#0F94B9" />
+      <pointLight ref={light2} distance={20} intensity={10} color="#A20870" />
+      <ambientLight intensity={0.2} />
+    </>
   );
 };
 
 export const Global3DBackground = () => {
   return (
-    <div className="fixed inset-0 z-[-1] bg-darker">
-      <Canvas camera={{ position: [0, 0, 10], fov: 60 }} dpr={[1, 2]}>
-        <ambientLight intensity={0.5} />
-        <pointLight position={[10, 10, 10]} color="#F0580E" intensity={1} />
-        <Particles />
-        <fog attach="fog" args={['#0b0f14', 5, 25]} />
+    <div className="fixed inset-0 z-[-1] bg-[#020406]">
+      <Canvas camera={{ position: [0, 0, 5], fov: 75 }} dpr={[1, 2]}>
+        <LightSystem />
+        <FluidMesh />
+        <fog attach="fog" args={['#020406', 2, 10]} />
       </Canvas>
     </div>
   );

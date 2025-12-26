@@ -1,67 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Volume2, VolumeX, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useSpeechSynthesis } from '../../hooks/useSpeechSynthesis';
-
-const teamMembers = [
-    {
-        id: 1,
-        name: { en: 'Sarah Al-Mansouri', ar: 'سارة المنصوري' },
-        role: { en: 'Public Relations', ar: 'العلاقات العامة' },
-        bio: {
-            en: 'Specializing in shaping brand perception and managing cross-cultural communication.',
-            ar: 'متخصصة في تشكيل تصور العلامة التجارية وإدارة التواصل عبر الثقافات.'
-        },
-        voiceText: {
-            en: "Hi, I'm Sarah. I bridge the gap between your brand and the public eye with strategic PR.",
-            ar: "مرحباً، أنا سارة. أقوم بسد الفجوة بين علامتك التجارية والجمهور من خلال العلاقات العامة الاستراتيجية."
-        },
-        avatar: '/assets/team/member1.png',
-        color: 'from-purple/20'
-    },
-    {
-        id: 2,
-        name: { en: 'Ahmed Hassan', ar: 'أحمد حسن' },
-        role: { en: 'Media Buying', ar: 'شراء الوسائط الإعلانية' },
-        bio: {
-            en: 'Performance-driven expert focused on maximizing ROAS across global platforms.',
-            ar: 'خبير مدفوع بالأداء يركز على تعظيم العائد على الإنفاق الإعلاني عبر المنصات العالمية.'
-        },
-        voiceText: {
-            en: "I'm Ahmed. My mission is to ensure every dollar you spend on ads brings the highest possible return.",
-            ar: "أنا أحمد. مهمتي هي التأكد من أن كل دولار تنفقه على الإعلانات يحقق أعلى عائد ممكن."
-        },
-        avatar: '/assets/team/member2.png',
-        color: 'from-primary/20'
-    },
-    {
-        id: 3,
-        name: { en: 'Layla Ibrahim', ar: 'ليلى إبراهيم' },
-        role: { en: 'Content Strategy', ar: 'استراتيجية المحتوى' },
-        bio: {
-            en: 'Crafting viral-ready narratives that resonate with MENA audiences.',
-            ar: 'صياغة روايات جاهزة للانتشار تتردد صداها مع جمهور الشرق الأوسط وأفريقيا.'
-        },
-        voiceText: {
-            en: "Hello, I'm Layla. I create stories that people relate to and share across all digital channels.",
-            ar: "أهلاً، أنا ليلى. أصنع القصص التي يرتبط بها الناس ويشاركونها عبر جميع القنوات الرقمية."
-        },
-        avatar: '/assets/team/member3.png',
-        color: 'from-magenta/20'
-    }
-];
+import { Repository } from '../../data/repository';
+import type { TeamMember } from '../../data/types';
 
 export const TeamSection: React.FC = () => {
     const { i18n } = useTranslation();
     const lang = i18n.language as 'en' | 'ar';
     const { speak, stop, isSpeaking } = useSpeechSynthesis();
     const [activeIndex, setActiveIndex] = useState(0);
+    const [members, setMembers] = useState<TeamMember[]>([]);
 
-    const next = () => setActiveIndex((prev) => (prev + 1) % teamMembers.length);
-    const prev = () => setActiveIndex((prev) => (prev - 1 + teamMembers.length) % teamMembers.length);
+    useEffect(() => {
+        Repository.getTeam().then(setMembers);
+    }, []);
 
-    const currentMember = teamMembers[activeIndex];
+    const getMemberExtras = (key: string) => {
+        const map: Record<string, { color: string; voice: { en: string; ar: string } }> = {
+            pr: {
+                color: 'from-purple/20',
+                voice: { en: "Hi, I'm Sarah. I bridge the gap between your brand and the public eye.", ar: "مرحباً، أنا سارة. أقوم بسد الفجوة بين علامتك التجارية والجمهور." }
+            },
+            media: {
+                color: 'from-primary/20',
+                voice: { en: "I'm Ahmed. I ensure every dollar you spend brings the highest return.", ar: "أنا أحمد. أضمن أن كل دولار تنفقه يحقق أعلى عائد." }
+            },
+            content: {
+                color: 'from-magenta/20',
+                voice: { en: "Hello, I'm Layla. I create stories that people share everywhere.", ar: "أهلاً، أنا ليلى. أصنع القصص التي يشاركها الناس في كل مكان." }
+            },
+            research: {
+                color: 'from-orange/20',
+                voice: { en: "I'm Omar. I uncover the hidden data that puts you ahead.", ar: "أنا عمر. أكشف البيانات الخفية التي تضعك في المقدمة." }
+            },
+            moderator: {
+                color: 'from-green-500/20',
+                voice: { en: "I'm Fatima. I keep your community engaged and safe.", ar: "أنا فاطمة. أحافظ على تفاعل وأمان مجتمعك." }
+            }
+        };
+        return map[key] || map.pr;
+    };
+
+    if (!members.length) return null;
+
+    const next = () => setActiveIndex((prev) => (prev + 1) % members.length);
+    const prev = () => setActiveIndex((prev) => (prev - 1 + members.length) % members.length);
+
+    const currentMember = members[activeIndex];
+    const extras = getMemberExtras(currentMember.departmentKey);
 
     return (
         <section id="team" className="py-24 px-6 relative overflow-hidden bg-darker/50">
@@ -86,9 +74,9 @@ export const TeamSection: React.FC = () => {
                                 exit={{ opacity: 0, scale: 1.1, rotateY: 20 }}
                                 className="relative w-64 h-64 md:w-80 md:h-80"
                             >
-                                <div className={`absolute inset-0 bg-gradient-to-br ${currentMember.color} to-transparent blur-3xl opacity-50 rounded-full`} />
+                                <div className={`absolute inset-0 bg-gradient-to-br ${extras.color} to-transparent blur-3xl opacity-50 rounded-full`} />
                                 <img
-                                    src={currentMember.avatar}
+                                    src={currentMember.avatarUrl}
                                     alt={currentMember.name[lang]}
                                     className="w-full h-full object-contain relative z-10 drop-shadow-[0_0_30px_rgba(15,148,185,0.4)]"
                                 />
@@ -97,7 +85,7 @@ export const TeamSection: React.FC = () => {
 
                         {/* Controls for Voice */}
                         <button
-                            onClick={() => isSpeaking ? stop() : speak(currentMember.voiceText[lang], lang)}
+                            onClick={() => isSpeaking ? stop() : speak(extras.voice[lang], lang)}
                             className="absolute bottom-0 right-1/4 z-20 p-4 bg-white text-darker rounded-full shadow-xl hover:scale-110 transition-transform group"
                         >
                             {isSpeaking ? <VolumeX className="text-primary" /> : <Volume2 className="group-hover:text-primary transition-colors" />}
@@ -126,7 +114,7 @@ export const TeamSection: React.FC = () => {
                                 <ChevronLeft className="text-white" />
                             </button>
                             <div className="flex items-center gap-2">
-                                {teamMembers.map((_, i) => (
+                                {members.map((_, i) => (
                                     <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === activeIndex ? 'w-8 bg-primary' : 'w-2 bg-white/20'}`} />
                                 ))}
                             </div>
